@@ -34,8 +34,20 @@ android {
     }
 }
 
-dependencies {
 
+def githubProperties = new Properties()
+githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
+
+def getVersionName = { ->
+    return "1.0.0" // Replace with version Name
+}
+
+def getArtifactId = { ->
+    return "app" // Replace with library name ID
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
@@ -47,16 +59,20 @@ dependencies {
 
 publishing {
     publications {
-        debug(MavenPublication) {
+        /*bar(MavenPublication) {
             afterEvaluate {
-
                 groupId = "com.example.demomodule"
-                artifactId = "demo"
-                version = "1.0.0"
-                artifact("$buildDir/outputs/aar/app-debug.aar")
-
-                from components.release
+                artifactId = getArtifactId()
+                version = getVersionName()
+                artifact("$buildDir/outputs/aar/${getArtifactId()}-release.aar")
             }
+        }*/
+
+        bar(MavenPublication) {
+            groupId = "com.example.demomodule"
+            artifactId = getArtifactId()
+            version = getVersionName()
+            artifact("$buildDir/outputs/aar/app-release.aar")
         }
     }
 
@@ -70,8 +86,8 @@ publishing {
             url = uri("https://maven.pkg.github.com/Suraj-Japptech/DemoModule") // Github Package
             credentials {
                 //Fetch these details from the properties file or from Environment variables
-                username = 'Suraj-Japptech'
-                password = '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'
+                username = githubProperties['gpr.usr'] //?: System.getenv("GPR_USER")
+                password = githubProperties['gpr.key'] //?: System.getenv("GPR_API_KEY")
             }
         }
     }
